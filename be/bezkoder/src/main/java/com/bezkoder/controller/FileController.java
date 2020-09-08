@@ -41,7 +41,7 @@ public class FileController {
         List<ResponseFile> files = filesStorageService.getAllFiles().map(dbFile -> {
             String fileDownloadUri = ServletUriComponentsBuilder
                     .fromCurrentContextPath()
-                    .path("/files/")
+                    .path("/api/auth/files/")
                     .path(dbFile.getId())
                     .toUriString();
 

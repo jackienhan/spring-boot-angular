@@ -34,11 +34,6 @@ public class LocalDataSource implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        LOGGER.trace("This is TRACE");
-        LOGGER.debug("This is DEBUG");
-        LOGGER.info("This is INFO");
-        LOGGER.warn("This is WARN");
-        LOGGER.error("This is ERROR");
 //        logger.error("Error Message Logged !!!", new NullPointerException("NullError"));
 //        User user = new User();
 //        user.setUsername("admin");
