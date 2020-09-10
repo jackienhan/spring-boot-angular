@@ -46,8 +46,8 @@ public class AuthController {
 
     @Autowired
     private JwtUtils jwtUtils;
-    @Autowired
-    private SessionManagementService sessionManagementService;
+//    @Autowired
+//    private SessionManagementService sessionManagementService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest, HttpSession session) {

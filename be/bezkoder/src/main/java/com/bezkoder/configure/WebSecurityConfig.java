@@ -18,6 +18,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -31,6 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -55,9 +59,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable();
+        http.cors().and().csrf().
+                csrfTokenRepository(csrfTokenRepository()).
+                disable();
 
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        http.requiresChannel()
+                .anyRequest()
+                .requiresSecure();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).and()
+                .addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class)
+
                 .authorizeRequests().antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
                 .anyRequest().authenticated();
@@ -66,4 +77,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
+    private CsrfTokenRepository csrfTokenRepository() {
+        CookieCsrfTokenRepository csrfToken = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        csrfToken.setCookiePath("/");
+        csrfToken.setCookieHttpOnly(false);
+        return csrfToken;
+    }
 }
